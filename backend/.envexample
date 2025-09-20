@@ -1,0 +1,6 @@
+AWS_ACCESS_KEY_ID="nyom"
+AWS_SECRET_ACCESS_KEY="dont look >:("
+AWS_SESSION_TOKEN="pizza"
+
+MONGO_URI="mongo db uri"
+MONGO_DB="database name"
