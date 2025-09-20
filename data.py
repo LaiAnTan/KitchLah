@@ -11,6 +11,12 @@ db = client.Kitchlah_db
 stations_coll = db.stations
 ingredients_coll = db.ingredients
 items_coll = db.items
+orders_coll = db.orders
+
+stations_coll.delete_many({})
+ingredients_coll.delete_many({})
+items_coll.delete_many({})
+orders_coll.delete_many({})
 
 prep = {
 	"name": "Prep Station",
@@ -361,21 +367,25 @@ burger_and_fries = {
 			"station_id": station_ids["prep"],
 			"task_name": "Prepare bun and veggies",
 			"duration": 2,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["grill"],
 			"task_name": "Grill patty",
-			"duration": 6
+			"duration": 6,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["fryer"],
 			"task_name": "Fry fries",
-			"duration": 4
+			"duration": 4,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["assembly"],
 			"task_name": "Plate dish",
-			"duration": 2
+			"duration": 2,
+			"depends_on": [0, 1, 2]
 		}
 	],
 	"total_time": 14
@@ -398,21 +408,25 @@ fish_and_chips = {
 			"station_id": station_ids["prep"],
 			"task_name": "Coat fish in batter",
 			"duration": 2,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["fryer"],
 			"task_name": "Fry fish",
-			"duration": 6
+			"duration": 6,
+			"depends_on": [0]
 		},
 		{
 			"station_id": station_ids["fryer"],
 			"task_name": "Fry fries",
-			"duration": 4
+			"duration": 4,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["assembly"],
 			"task_name": "Plate with tartar sauce and lemon",
-			"duration": 1
+			"duration": 1,
+			"depends_on": [1, 2]
 		}
 	],
 	"total_time": 13
@@ -434,21 +448,25 @@ spaghetti_bolognese = {
 			"station_id": station_ids["prep"],
 			"task_name": "Chop onions and garlic",
 			"duration": 3,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["stove"],
 			"task_name": "Boil spaghetti",
-			"duration": 10
+			"duration": 10,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["stove"],
 			"task_name": "Cook sauce with meat",
-			"duration": 6
+			"duration": 6,
+			"depends_on": [0]
 		},
 		{
 			"station_id": station_ids["assembly"],
 			"task_name": "Mix pasta with sauce and plate",
-			"duration": 1
+			"duration": 1,
+			"depends_on": [1, 2]
 		}
 	],
 	"total_time": 20
@@ -469,26 +487,31 @@ chicken_chop = {
 			"station_id": station_ids["prep"],
 			"task_name": "Season chicken",
 			"duration": 1,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["grill"],
 			"task_name": "Grill chicken",
-			"duration": 8
+			"duration": 8,
+			"depends_on": [0]
 		},
 		{
 			"station_id": station_ids["fryer"],
 			"task_name": "Fry fries",
-			"duration": 4
+			"duration": 4,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["stove"],
 			"task_name": "Heat sauce",
-			"duration": 2
+			"duration": 2,
+			"depends_on": []
 		},
 		{
 			"station_id": station_ids["assembly"],
 			"task_name": "Plate chicken with sauce and sides",
-			"duration": 1
+			"duration": 1,
+			"depends_on": [1, 2, 3]
 		}
 	],
 	"total_time": 16
@@ -623,10 +646,6 @@ order7 = {
 	]
 }
 
-# Create orders collection reference
-orders_coll = db.orders
-
-# Insert all orders into the database
 orders_coll.insert_many([order1, order2, order3, order4, order5, order6, order7])
 
 client.close()
