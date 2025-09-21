@@ -15,9 +15,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-off-white">
+    <>
       {/* Header */}
-      <header className="bg-primary text-white shadow-lg">
+      <header className="bg-primary text-white shadow-lg min-w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -65,10 +65,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        {children}
-      </main>
-    </div>
+      <div className="flex overflow-auto">
+        <main className="flex flex-1 max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          {children}
+        </main>
+      </div>
+    </>
   );
 };
 

@@ -78,7 +78,7 @@ const AIDecisionMaking: React.FC = () => {
   const simulationResult = simulationInput ? runSimulation() : null;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col space-y-6">
       {/* Header */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Decision Making</h1>
@@ -110,9 +110,9 @@ const AIDecisionMaking: React.FC = () => {
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto">
         {/* Left Panel - Order Queues */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg shadow-sm p-6 overflow-y-auto">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             {activeStation === 'all' ? 'All Orders' : `${currentStation?.name} Orders`}
           </h2>
