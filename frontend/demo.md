@@ -25,6 +25,8 @@
 - **Current Date & Time**: Live display of current date and time in the header
 - **Menu-Based Predictions**: Click on any menu item to see expandable hourly breakdown
 - **Loading Animation**: Watch the loading spinner while hourly data is being generated
+- **NEW: Order Prediction Feedback**: Provide feedback on whether actual orders were more/equal/less than predicted
+- **NEW: Weather/Occasion Dropdown**: Select reasons like rainy weather, festive season, etc.
 - **Real-Time Alerts**: See delay notifications, surge predictions, and critical alerts
 - **Interactive Chart**: Hover over the line chart to see detailed order predictions
 - **Surge Predictions**: Check the right panel for peak hour warnings
@@ -37,6 +39,10 @@
 - **Stock History Tab**:
   - See enhanced transaction history with more detailed entries
   - Track waste costs and money lost
+- **NEW: Stock Transfer Tab**:
+  - View stock levels across 4 branches: Shah Alam (ours), Klang, Petaling Jaya, Bangsar
+  - Each branch displayed in its own box with color-coded stock status
+  - AI recommendations for stock transfers with priority levels and time frames
 - **AI Suggestions Panel**:
   - **NEW**: "Generate Recipes/Ideas" button with loading animation
   - Get AI-generated recipe suggestions for near-expiry items

@@ -73,6 +73,30 @@ export interface AISuggestion {
   action: string;
 }
 
+export interface BranchStock {
+  branchId: string;
+  branchName: string;
+  stock: {
+    itemId: string;
+    itemName: string;
+    quantity: number;
+    unit: string;
+    status: 'low' | 'medium' | 'high';
+  }[];
+}
+
+export interface StockTransferRecommendation {
+  id: string;
+  fromBranch: string;
+  toBranch: string;
+  item: string;
+  quantity: number;
+  unit: string;
+  timeFrame: string;
+  reason: string;
+  priority: 'low' | 'medium' | 'high';
+}
+
 // Mock data
 export const orderPredictions: OrderPrediction[] = [
   { timeSlot: '6:00 AM', predictedOrders: 12, confidence: 85 },
@@ -576,6 +600,100 @@ export const orders: Order[] = [
     status: 'ready',
     estimatedTime: 0,
     priority: 'medium'
+  }
+];
+
+export const branchStocks: BranchStock[] = [
+  {
+    branchId: 'shah-alam',
+    branchName: 'Shah Alam (Ours)',
+    stock: [
+      { itemId: '1', itemName: 'Chicken Breast', quantity: 8, unit: 'kg', status: 'low' },
+      { itemId: '2', itemName: 'Tomatoes', quantity: 5, unit: 'kg', status: 'low' },
+      { itemId: '3', itemName: 'Lettuce', quantity: 3, unit: 'heads', status: 'low' },
+      { itemId: '4', itemName: 'Ground Beef', quantity: 12, unit: 'kg', status: 'medium' },
+      { itemId: '5', itemName: 'Fish Fillet', quantity: 6, unit: 'kg', status: 'low' }
+    ]
+  },
+  {
+    branchId: 'klang',
+    branchName: 'Klang',
+    stock: [
+      { itemId: '1', itemName: 'Chicken Breast', quantity: 25, unit: 'kg', status: 'high' },
+      { itemId: '2', itemName: 'Tomatoes', quantity: 18, unit: 'kg', status: 'high' },
+      { itemId: '3', itemName: 'Lettuce', quantity: 12, unit: 'heads', status: 'high' },
+      { itemId: '4', itemName: 'Ground Beef', quantity: 20, unit: 'kg', status: 'high' },
+      { itemId: '5', itemName: 'Fish Fillet', quantity: 15, unit: 'kg', status: 'high' }
+    ]
+  },
+  {
+    branchId: 'petaling-jaya',
+    branchName: 'Petaling Jaya',
+    stock: [
+      { itemId: '1', itemName: 'Chicken Breast', quantity: 15, unit: 'kg', status: 'medium' },
+      { itemId: '2', itemName: 'Tomatoes', quantity: 10, unit: 'kg', status: 'medium' },
+      { itemId: '3', itemName: 'Lettuce', quantity: 8, unit: 'heads', status: 'medium' },
+      { itemId: '4', itemName: 'Ground Beef', quantity: 18, unit: 'kg', status: 'high' },
+      { itemId: '5', itemName: 'Fish Fillet', quantity: 12, unit: 'kg', status: 'medium' }
+    ]
+  },
+  {
+    branchId: 'bangsar',
+    branchName: 'Bangsar',
+    stock: [
+      { itemId: '1', itemName: 'Chicken Breast', quantity: 22, unit: 'kg', status: 'high' },
+      { itemId: '2', itemName: 'Tomatoes', quantity: 16, unit: 'kg', status: 'high' },
+      { itemId: '3', itemName: 'Lettuce', quantity: 10, unit: 'heads', status: 'high' },
+      { itemId: '4', itemName: 'Ground Beef', quantity: 14, unit: 'kg', status: 'medium' },
+      { itemId: '5', itemName: 'Fish Fillet', quantity: 18, unit: 'kg', status: 'high' }
+    ]
+  }
+];
+
+export const stockTransferRecommendations: StockTransferRecommendation[] = [
+  {
+    id: '1',
+    fromBranch: 'Klang',
+    toBranch: 'Shah Alam',
+    item: 'Chicken Breast',
+    quantity: 10,
+    unit: 'kg',
+    timeFrame: 'Within 2 hours',
+    reason: 'Shah Alam branch critically low on chicken breast',
+    priority: 'high'
+  },
+  {
+    id: '2',
+    fromBranch: 'Bangsar',
+    toBranch: 'Shah Alam',
+    item: 'Tomatoes',
+    quantity: 8,
+    unit: 'kg',
+    timeFrame: 'Within 4 hours',
+    reason: 'Shah Alam branch running low on tomatoes',
+    priority: 'medium'
+  },
+  {
+    id: '3',
+    fromBranch: 'Petaling Jaya',
+    toBranch: 'Shah Alam',
+    item: 'Lettuce',
+    quantity: 5,
+    unit: 'heads',
+    timeFrame: 'Within 3 hours',
+    reason: 'Shah Alam branch needs fresh lettuce for salads',
+    priority: 'medium'
+  },
+  {
+    id: '4',
+    fromBranch: 'Klang',
+    toBranch: 'Shah Alam',
+    item: 'Fish Fillet',
+    quantity: 6,
+    unit: 'kg',
+    timeFrame: 'Within 2 hours',
+    reason: 'Shah Alam branch low on fish for Fish & Chips',
+    priority: 'high'
   }
 ];
 
