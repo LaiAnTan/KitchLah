@@ -1,10 +1,29 @@
-import React, { useState } from 'react';
-import { stockItems, stockHistory, aiSuggestions, branchStocks, stockTransferRecommendations } from '../data/mockData';
+import React, { useEffect, useState } from 'react';
+import { StockItem, stockHistory, aiSuggestions, branchStocks, stockTransferRecommendations } from '../data/mockData';
 
 const WasteMinimization: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'history' | 'transfer'>('inventory');
   const [generatedRecipes, setGeneratedRecipes] = useState<string[]>([]);
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
+  const [stockItems, setStockItem] = useState<Array<StockItem>>([])
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/stock")
+    .then((data) => data.json())
+    .then((datas) => {
+      for (const data of datas) {
+        console.log(data)
+        const date = new Date(data["expiryDate"])
+        const formatted = new Intl.DateTimeFormat("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric"
+        }).format(date);
+        data["expiryDate"] = formatted
+      }
+      setStockItem(datas)
+    })
+  }, [])
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -83,7 +102,7 @@ const WasteMinimization: React.FC = () => {
   const calculateStockPercentage = (item: any) => {
     // Mock calculation - in real app, this would be based on actual stock levels
     const baseQuantity = 50; // Assume base quantity for percentage calculation
-    return Math.round((item.quantity / baseQuantity) * 100);
+    return Math.min(Math.round((item.quantity / baseQuantity) * 100), 100);
   };
 
   const getStockStatusColor = (status: string) => {
@@ -126,7 +145,7 @@ const WasteMinimization: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col space-y-6">
       {/* Header */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Smart Waste Minimization</h1>
@@ -137,11 +156,11 @@ const WasteMinimization: React.FC = () => {
       </div>
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-auto">
         {/* Left Panel */}
-        <div className="space-y-6">
+        <div className="flex flex-col space-y-6 overflow-auto">
           {/* Tabs */}
-          <div className="bg-white rounded-lg shadow-sm">
+          <div className="flex flex-col bg-white rounded-lg shadow-sm overflow-auto">
             <div className="border-b border-gray-200">
               <nav className="-mb-px flex space-x-8 px-6">
                 <button
@@ -177,9 +196,9 @@ const WasteMinimization: React.FC = () => {
               </nav>
             </div>
 
-            <div className="p-6">
+            <div className="flex p-6 overflow-auto">
               {activeTab === 'inventory' ? (
-                <div>
+                <div className='flex flex-col overflow-auto'>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Current Stock</h3>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -359,11 +378,11 @@ const WasteMinimization: React.FC = () => {
         </div>
 
         {/* Right Panel */}
-        <div className="space-y-6">
+        <div className="flex flex-col space-y-6 overflow-auto">
           {/* Near-Expiry Items */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex flex-col bg-white rounded-lg shadow-sm p-6 overflow-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">⚠️ Near-Expiry Items</h3>
-            <div className="space-y-3">
+            <div className="space-y-3 overflow-auto">
               {nearExpiryItems.length > 0 ? (
                 nearExpiryItems.map((item) => (
                   <div

@@ -12,10 +12,10 @@ def generate_recipes():
     """Generate recipes based on ingredient ID using Nova model"""
     try:
         data = request.get_json()
-        
+
         if 'ingredient_id' not in data:
             return jsonify({'error': 'ingredient_id is required'}), 400
-        
+
         ingredient_id = data['ingredient_id']
         
         try:

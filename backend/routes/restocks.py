@@ -1,13 +1,72 @@
 from flask import Blueprint, request, jsonify
 from models.restock import Restock
+from datetime import datetime, timezone
+from utils.database import db
 
 restocks_bp = Blueprint('restocks', __name__)
+
+@restocks_bp.route('/api/stock', methods=['GET'])
+def get_all_stock():
+    """Get all restocks with ingredient details, for restock history"""
+    try:
+        restocks = Restock.get_all_with_details()
+        res = []   
+            
+        for restock in restocks:
+            restock_date = restock['expiry_date']
+            dt_obj = datetime.fromisoformat(restock_date.replace("Z", "+00:00"))
+            now = datetime.now(timezone.utc)
+            delta = dt_obj - now
+
+            status = 'fresh'
+            if (delta.days < 3):
+                status = 'expired'
+            elif (delta.days <= 15):
+                status = 'near-expiry'
+
+            res.append({
+                'id': restock['_id'],
+                'name': restock['ingredient_name'],
+                'unit': restock['unit'],
+                'cost': restock['price_per_unit'],
+                'expiryDate': restock['expiry_date'],
+                'status': status,
+                'quantity': restock['items_left']
+            })
+            
+        return jsonify(res), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @restocks_bp.route('/api/restocks', methods=['GET'])
 def get_all_restocks():
     """Get all restocks with ingredient details, for restock history"""
     try:
         restocks = Restock.get_all_with_details()
+        res = []   
+            
+        for restock in restocks:
+            restock_date = restock['expiry_date']
+            dt_obj = datetime.fromisoformat(restock_date.replace("Z", "+00:00"))
+            now = datetime.now(timezone.utc)
+            delta = now - dt_obj
+
+            status = 'fresh'
+            if (delta.days <= 15):
+                status = 'near-expiry'
+            elif (delta.days < 3):
+                status = 'expired'
+            print(restock)
+            res.append({
+                'id': restock['_id'],
+                'name': restock['ingredient_name'],
+                'unit': restock['unit'],
+                'cost': restock['price_per_unit'],
+                'expiryDate': restock['expiry_date'],
+                'status': restock['items_left']
+            })
+            
         return jsonify(restocks), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

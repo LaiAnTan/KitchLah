@@ -15,7 +15,7 @@ class BedrockService:
         try:
             self.client = boto3.client(
                 'bedrock-runtime',
-                region_name='us-east1'
+                region_name='us-east-1'
             )
             self.model_id = 'us.amazon.nova-pro-v1:0'
         except Exception as e:
