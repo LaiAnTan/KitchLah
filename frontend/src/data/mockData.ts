@@ -35,6 +35,28 @@ export interface StockItem {
   cost: number;
 }
 
+export interface RecipeIngredient {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  notes: string;
+}
+
+export interface Recipe {
+  cook_time_minutes: number;
+  cuisine_type: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  estimated_cost: number;
+  ingredients: RecipeIngredient[];
+  instructions: string[];
+  name: string;
+  primary_ingredient: string;
+  profit_margin_percent: number;
+  servings: number;
+  suggested_selling_price: number;
+}
+
 export interface StockHistory {
   id: string;
   date: string;

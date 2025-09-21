@@ -4,11 +4,6 @@ import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
 from flask import Blueprint, request, jsonify
 
-# Set AWS credentials (replace with your actual IAM credentials)
-os.environ["AWS_ACCESS_KEY_ID"] = "AKIAVFRRC6O4ROVMS3EM"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "m5T83NpDPzbhUVQuDZDbn2FSEcJaQXIcOdsj5AfP"
-os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-
 class BedrockService:
     def __init__(self):
         """Initialize Bedrock client with credentials from config"""
@@ -17,7 +12,7 @@ class BedrockService:
                 'bedrock-runtime',
                 region_name='us-east-1'
             )
-            self.model_id = 'us.amazon.nova-pro-v1:0'
+            self.model_id = 'amazon.nova-pro-v1:0'
         except Exception as e:
             print(f"Error initializing Bedrock client: {e}")
             self.client = None
