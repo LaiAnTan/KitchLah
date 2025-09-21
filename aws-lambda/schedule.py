@@ -8,7 +8,7 @@ import os
 from datetime import datetime, timedelta
 
 load_dotenv()
-uri = os.getenv('MONGO_URI')
+uri = os.getenv('MONGODB_URI')
 
 client = MongoClient(uri)
 db = client["kitchlah_db"]
@@ -190,7 +190,7 @@ if __name__ == "__main__":
 		# 		f"Start={task_var['start_time']}, End={task_var['end_time']}")
 
 		all_tasks_with_timestamps = convert_to_timestamps(all_tasks_chrono, scheduling_time, time_unit_minutes=1)	
-		# schedules_collection.insert_many(all_tasks_with_timestamps)
+		schedules_collection.insert_many(all_tasks_with_timestamps)
 		# print_schedule(all_tasks_with_timestamps)
 	else:
 		print("No solution found!")

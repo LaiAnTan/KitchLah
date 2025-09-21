@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-uri = os.getenv('MONGO_URI')
+uri = os.getenv('MONGODB_URI')
 
 client = MongoClient(uri)
 db = client.kitchlah_db
@@ -12,11 +12,13 @@ stations_coll = db.stations
 ingredients_coll = db.ingredients
 items_coll = db.items
 orders_coll = db.orders
+restork_coll = db.restocks
 
 stations_coll.delete_many({})
 ingredients_coll.delete_many({})
 items_coll.delete_many({})
 orders_coll.delete_many({})
+restork_coll.delete_many({})
 
 prep = {
 	"name": "Prep Station",
@@ -41,248 +43,277 @@ assembly = {
 
 # Ingredient definitions
 bun = {
-	"name": "Burger Bun",
-	"unit": "piece",
-	"stock_quantity": 500,
-	"reorder_level": 50,
-	"cost_per_unit": 0.35
+    "name": "Burger Bun",
+    "best_used_days": 5,  # bread shelf life
+    "price_per_unit": 0.35,
+    "unit": "piece",
+    "current_stock": 500,
+    "last_restock_date": "2025-09-15"
 }
 
 patty_chicken = {
-	"name": "Chicken Patty",
-	"unit": "piece",
-	"stock_quantity": 200,
-	"reorder_level": 30,
-	"cost_per_unit": 2.50
+    "name": "Chicken Patty",
+    "best_used_days": 7,  # frozen shelf life after thaw
+    "price_per_unit": 2.50,
+    "unit": "piece",
+    "current_stock": 200,
+    "last_restock_date": "2025-09-15"
 }
 
 lettuce = {
-	"name": "Fresh Lettuce",
-	"unit": "grams",
-	"stock_quantity": 2000,
-	"reorder_level": 300,
-	"cost_per_unit": 0.008
+    "name": "Fresh Lettuce",
+    "best_used_days": 7,
+    "price_per_unit": 0.008,
+    "unit": "grams",
+    "current_stock": 2000,
+    "last_restock_date": "2025-09-17"
 }
 
 tomato = {
-	"name": "Fresh Tomato",
-	"unit": "grams",
-	"stock_quantity": 3000,
-	"reorder_level": 500,
-	"cost_per_unit": 0.012
+    "name": "Fresh Tomato",
+    "best_used_days": 10,
+    "price_per_unit": 0.012,
+    "unit": "grams",
+    "current_stock": 3000,
+    "last_restock_date": "2025-09-16"
 }
 
 onion = {
-	"name": "Yellow Onion",
-	"unit": "grams",
-	"stock_quantity": 2500,
-	"reorder_level": 400,
-	"cost_per_unit": 0.005
+    "name": "Yellow Onion",
+    "best_used_days": 30,
+    "price_per_unit": 0.005,
+    "unit": "grams",
+    "current_stock": 2500,
+    "last_restock_date": "2025-09-12"
 }
 
 mayonaise = {
-	"name": "Mayonnaise",
-	"unit": "ml",
-	"stock_quantity": 1000,
-	"reorder_level": 150,
-	"cost_per_unit": 0.015
+    "name": "Mayonnaise",
+    "best_used_days": 60,
+    "price_per_unit": 0.015,
+    "unit": "ml",
+    "current_stock": 1000,
+    "last_restock_date": "2025-09-10"
 }
 
 fries = {
-	"name": "Frozen French Fries",
-	"unit": "grams",
-	"stock_quantity": 5000,
-	"reorder_level": 800,
-	"cost_per_unit": 0.004
+    "name": "Frozen French Fries",
+    "best_used_days": 90,
+    "price_per_unit": 0.004,
+    "unit": "grams",
+    "current_stock": 5000,
+    "last_restock_date": "2025-09-05"
 }
 
 oil = {
-	"name": "Cooking Oil",
-	"unit": "ml",
-	"stock_quantity": 5000,
-	"reorder_level": 1000,
-	"cost_per_unit": 0.01
+    "name": "Cooking Oil",
+    "best_used_days": 180,
+    "price_per_unit": 0.01,
+    "unit": "ml",
+    "current_stock": 5000,
+    "last_restock_date": "2025-09-01"
 }
 
 # Fish n Chips ingredients
 white_fish = {
-	"name": "White Fish Fillet",
-	"unit": "piece",
-	"stock_quantity": 100,
-	"reorder_level": 20,
-	"cost_per_unit": 4.50
+    "name": "White Fish Fillet",
+    "best_used_days": 5,
+    "price_per_unit": 4.50,
+    "unit": "piece",
+    "current_stock": 100,
+    "last_restock_date": "2025-09-16"
 }
 
 flour = {
-	"name": "All-Purpose Flour",
-	"unit": "grams",
-	"stock_quantity": 5000,
-	"reorder_level": 800,
-	"cost_per_unit": 0.002
+    "name": "All-Purpose Flour",
+    "best_used_days": 180,
+    "price_per_unit": 0.002,
+    "unit": "grams",
+    "current_stock": 5000,
+    "last_restock_date": "2025-09-01"
 }
 
 egg = {
-	"name": "Eggs",
-	"unit": "piece",
-	"stock_quantity": 200,
-	"reorder_level": 30,
-	"cost_per_unit": 0.25
+    "name": "Eggs",
+    "best_used_days": 21,
+    "price_per_unit": 0.25,
+    "unit": "piece",
+    "current_stock": 200,
+    "last_restock_date": "2025-09-18"
 }
 
 breadcrumbs = {
-	"name": "Breadcrumbs",
-	"unit": "grams",
-	"stock_quantity": 2000,
-	"reorder_level": 300,
-	"cost_per_unit": 0.003
+    "name": "Breadcrumbs",
+    "best_used_days": 90,
+    "price_per_unit": 0.003,
+    "unit": "grams",
+    "current_stock": 2000,
+    "last_restock_date": "2025-09-07"
 }
 
 tartar_sauce = {
-	"name": "Tartar Sauce",
-	"unit": "ml",
-	"stock_quantity": 1000,
-	"reorder_level": 150,
-	"cost_per_unit": 0.02
+    "name": "Tartar Sauce",
+    "best_used_days": 30,
+    "price_per_unit": 0.02,
+    "unit": "ml",
+    "current_stock": 1000,
+    "last_restock_date": "2025-09-10"
 }
 
 lemon = {
-	"name": "Fresh Lemon",
-	"unit": "piece",
-	"stock_quantity": 50,
-	"reorder_level": 10,
-	"cost_per_unit": 0.30
+    "name": "Fresh Lemon",
+    "best_used_days": 14,
+    "price_per_unit": 0.30,
+    "unit": "piece",
+    "current_stock": 50,
+    "last_restock_date": "2025-09-18"
 }
 
 # Spaghetti ingredients
 spaghetti_pasta = {
-	"name": "Spaghetti Pasta",
-	"unit": "grams",
-	"stock_quantity": 10000,
-	"reorder_level": 1500,
-	"cost_per_unit": 0.003
+    "name": "Spaghetti Pasta",
+    "best_used_days": 365,
+    "price_per_unit": 0.003,
+    "unit": "grams",
+    "current_stock": 10000,
+    "last_restock_date": "2025-09-01"
 }
 
 olive_oil = {
-	"name": "Olive Oil",
-	"unit": "ml",
-	"stock_quantity": 2000,
-	"reorder_level": 300,
-	"cost_per_unit": 0.015
+    "name": "Olive Oil",
+    "best_used_days": 365,
+    "price_per_unit": 0.015,
+    "unit": "ml",
+    "current_stock": 2000,
+    "last_restock_date": "2025-09-01"
 }
 
 garlic = {
-	"name": "Fresh Garlic",
-	"unit": "grams",
-	"stock_quantity": 500,
-	"reorder_level": 100,
-	"cost_per_unit": 0.01
+    "name": "Fresh Garlic",
+    "best_used_days": 20,
+    "price_per_unit": 0.01,
+    "unit": "grams",
+    "current_stock": 500,
+    "last_restock_date": "2025-09-14"
 }
 
 minced_beef = {
-	"name": "Minced Beef",
-	"unit": "grams",
-	"stock_quantity": 2000,
-	"reorder_level": 400,
-	"cost_per_unit": 0.015
+    "name": "Minced Beef",
+    "best_used_days": 3,
+    "price_per_unit": 0.015,
+    "unit": "grams",
+    "current_stock": 2000,
+    "last_restock_date": "2025-09-19"
 }
 
 minced_chicken = {
-	"name": "Minced Chicken",
-	"unit": "grams",
-	"stock_quantity": 2000,
-	"reorder_level": 400,
-	"cost_per_unit": 0.012
+    "name": "Minced Chicken",
+    "best_used_days": 3,
+    "price_per_unit": 0.012,
+    "unit": "grams",
+    "current_stock": 2000,
+    "last_restock_date": "2025-09-19"
 }
 
 bacon = {
-	"name": "Bacon Strips",
-	"unit": "grams",
-	"stock_quantity": 1000,
-	"reorder_level": 200,
-	"cost_per_unit": 0.018
+    "name": "Bacon Strips",
+    "best_used_days": 7,
+    "price_per_unit": 0.018,
+    "unit": "grams",
+    "current_stock": 1000,
+    "last_restock_date": "2025-09-15"
 }
 
 tomato_sauce = {
-	"name": "Tomato Sauce",
-	"unit": "ml",
-	"stock_quantity": 3000,
-	"reorder_level": 500,
-	"cost_per_unit": 0.008
+    "name": "Tomato Sauce",
+    "best_used_days": 60,
+    "price_per_unit": 0.008,
+    "unit": "ml",
+    "current_stock": 3000,
+    "last_restock_date": "2025-09-12"
 }
 
 cream_sauce = {
-	"name": "Cream Sauce",
-	"unit": "ml",
-	"stock_quantity": 2000,
-	"reorder_level": 300,
-	"cost_per_unit": 0.012
+    "name": "Cream Sauce",
+    "best_used_days": 14,
+    "price_per_unit": 0.012,
+    "unit": "ml",
+    "current_stock": 2000,
+    "last_restock_date": "2025-09-14"
 }
 
 parmesan_cheese = {
-	"name": "Parmesan Cheese",
-	"unit": "grams",
-	"stock_quantity": 1000,
-	"reorder_level": 150,
-	"cost_per_unit": 0.025
+    "name": "Parmesan Cheese",
+    "best_used_days": 30,
+    "price_per_unit": 0.025,
+    "unit": "grams",
+    "current_stock": 1000,
+    "last_restock_date": "2025-09-12"
 }
 
 # Chicken Chop ingredients
 chicken_breast = {
-	"name": "Chicken Breast",
-	"unit": "piece",
-	"stock_quantity": 150,
-	"reorder_level": 30,
-	"cost_per_unit": 3.50
+    "name": "Chicken Breast",
+    "best_used_days": 5,
+    "price_per_unit": 3.50,
+    "unit": "piece",
+    "current_stock": 150,
+    "last_restock_date": "2025-09-18"
 }
 
 chicken_thigh = {
-	"name": "Chicken Thigh",
-	"unit": "piece",
-	"stock_quantity": 120,
-	"reorder_level": 25,
-	"cost_per_unit": 2.80
+    "name": "Chicken Thigh",
+    "best_used_days": 5,
+    "price_per_unit": 2.80,
+    "unit": "piece",
+    "current_stock": 120,
+    "last_restock_date": "2025-09-18"
 }
 
 seasoning_mix = {
-	"name": "Seasoning Mix",
-	"unit": "grams",
-	"stock_quantity": 500,
-	"reorder_level": 100,
-	"cost_per_unit": 0.015
+    "name": "Seasoning Mix",
+    "best_used_days": 365,
+    "price_per_unit": 0.015,
+    "unit": "grams",
+    "current_stock": 500,
+    "last_restock_date": "2025-09-01"
 }
 
 mushroom_sauce = {
-	"name": "Mushroom Sauce",
-	"unit": "ml",
-	"stock_quantity": 1500,
-	"reorder_level": 250,
-	"cost_per_unit": 0.018
+    "name": "Mushroom Sauce",
+    "best_used_days": 20,
+    "price_per_unit": 0.018,
+    "unit": "ml",
+    "current_stock": 1500,
+    "last_restock_date": "2025-09-14"
 }
 
 black_pepper_sauce = {
-	"name": "Black Pepper Sauce",
-	"unit": "ml",
-	"stock_quantity": 1500,
-	"reorder_level": 250,
-	"cost_per_unit": 0.016
+    "name": "Black Pepper Sauce",
+    "best_used_days": 20,
+    "price_per_unit": 0.016,
+    "unit": "ml",
+    "current_stock": 1500,
+    "last_restock_date": "2025-09-14"
 }
 
 mashed_potato = {
-	"name": "Mashed Potato",
-	"unit": "grams",
-	"stock_quantity": 3000,
-	"reorder_level": 500,
-	"cost_per_unit": 0.006
+    "name": "Mashed Potato",
+    "best_used_days": 3,
+    "price_per_unit": 0.006,
+    "unit": "grams",
+    "current_stock": 3000,
+    "last_restock_date": "2025-09-19"
 }
 
 mixed_salad = {
-	"name": "Mixed Salad",
-	"unit": "grams",
-	"stock_quantity": 2000,
-	"reorder_level": 300,
-	"cost_per_unit": 0.008
+    "name": "Mixed Salad",
+    "best_used_days": 5,
+    "price_per_unit": 0.008,
+    "unit": "grams",
+    "current_stock": 2000,
+    "last_restock_date": "2025-09-18"
 }
-
 
 
 # Insert stations and capture their ObjectIds
@@ -351,7 +382,7 @@ ingredient_ids = {
 
 # Define menu items using the actual MongoDB ObjectIds
 burger_and_fries = {
-	"name": "Burger and Fries",
+	"name": "burger_fries",
 	"ingredients": [
 		{ "ingredient_id": ingredient_ids["bun"], "quantity": 1, "unit": "piece" },
 		{ "ingredient_id": ingredient_ids["patty_chicken"], "quantity": 1, "unit": "piece" },
@@ -392,7 +423,7 @@ burger_and_fries = {
 }
 
 fish_and_chips = {
-	"name": "Fish and Chips",
+	"name": "fish_n_chip",
 	"ingredients": [
 		{ "ingredient_id": ingredient_ids["white_fish"], "quantity": 1, "unit": "piece" },
 		{ "ingredient_id": ingredient_ids["flour"], "quantity": 100, "unit": "grams" },
@@ -433,7 +464,7 @@ fish_and_chips = {
 }
 
 spaghetti_bolognese = {
-	"name": "Spaghetti Bolognese",
+	"name": "spaghetti",
 	"ingredients": [
 		{ "ingredient_id": ingredient_ids["spaghetti_pasta"], "quantity": 120, "unit": "grams" },
 		{ "ingredient_id": ingredient_ids["olive_oil"], "quantity": 15, "unit": "ml" },
@@ -473,7 +504,7 @@ spaghetti_bolognese = {
 }
 
 chicken_chop = {
-	"name": "Chicken Chop with Black Pepper Sauce",
+	"name": "chicken_chop",
 	"ingredients": [
 		{ "ingredient_id": ingredient_ids["chicken_thigh"], "quantity": 1, "unit": "piece" },
 		{ "ingredient_id": ingredient_ids["seasoning_mix"], "quantity": 10, "unit": "grams" },
@@ -647,5 +678,172 @@ order7 = {
 }
 
 orders_coll.insert_many([order1, order2, order3, order4, order5, order6, order7])
+
+from datetime import datetime, timedelta
+
+restocks = [
+    {
+        "ingredient_id": ingredient_ids["bun"],
+        "quantity_added": 200,
+        "date": "2025-09-01T09:00:00Z",
+        "items_left": 180,
+        "expiry_date": "2025-09-06T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["patty_chicken"],
+        "quantity_added": 100,
+        "date": "2025-09-02T11:30:00Z",
+        "items_left": 95,
+        "expiry_date": "2025-09-09T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["lettuce"],
+        "quantity_added": 500,
+        "date": "2025-09-03T08:15:00Z",
+        "items_left": 400,
+        "expiry_date": "2025-09-10T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["tomato"],
+        "quantity_added": 800,
+        "date": "2025-09-03T08:20:00Z",
+        "items_left": 750,
+        "expiry_date": "2025-09-13T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["onion"],
+        "quantity_added": 600,
+        "date": "2025-09-04T14:10:00Z",
+        "items_left": 580,
+        "expiry_date": "2025-10-04T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["mayonaise"],
+        "quantity_added": 300,
+        "date": "2025-09-05T10:00:00Z",
+        "items_left": 300,
+        "expiry_date": "2025-11-04T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["fries"],
+        "quantity_added": 2000,
+        "date": "2025-09-06T07:50:00Z",
+        "items_left": 1800,
+        "expiry_date": "2025-12-05T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["oil"],
+        "quantity_added": 3000,
+        "date": "2025-09-06T08:00:00Z",
+        "items_left": 3000,
+        "expiry_date": "2026-03-05T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["white_fish"],
+        "quantity_added": 40,
+        "date": "2025-09-07T12:00:00Z",
+        "items_left": 32,
+        "expiry_date": "2025-09-12T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["egg"],
+        "quantity_added": 100,
+        "date": "2025-09-07T12:15:00Z",
+        "items_left": 90,
+        "expiry_date": "2025-09-28T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["breadcrumbs"],
+        "quantity_added": 600,
+        "date": "2025-09-08T09:00:00Z",
+        "items_left": 580,
+        "expiry_date": "2025-12-07T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["lemon"],
+        "quantity_added": 20,
+        "date": "2025-09-09T13:20:00Z",
+        "items_left": 18,
+        "expiry_date": "2025-09-23T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["spaghetti_pasta"],
+        "quantity_added": 3000,
+        "date": "2025-09-10T09:30:00Z",
+        "items_left": 3000,
+        "expiry_date": "2026-09-10T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["olive_oil"],
+        "quantity_added": 1000,
+        "date": "2025-09-10T09:40:00Z",
+        "items_left": 950,
+        "expiry_date": "2026-09-10T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["garlic"],
+        "quantity_added": 200,
+        "date": "2025-09-11T10:00:00Z",
+        "items_left": 160,
+        "expiry_date": "2025-09-30T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["minced_beef"],
+        "quantity_added": 1000,
+        "date": "2025-09-12T16:00:00Z",
+        "items_left": 800,
+        "expiry_date": "2025-09-15T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["minced_chicken"],
+        "quantity_added": 800,
+        "date": "2025-09-12T16:10:00Z",
+        "items_left": 750,
+        "expiry_date": "2025-09-15T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["bacon"],
+        "quantity_added": 400,
+        "date": "2025-09-13T09:00:00Z",
+        "items_left": 380,
+        "expiry_date": "2025-09-20T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["chicken_breast"],
+        "quantity_added": 60,
+        "date": "2025-09-14T08:00:00Z",
+        "items_left": 55,
+        "expiry_date": "2025-09-19T00:00:00Z",
+        "clear": False
+    },
+    {
+        "ingredient_id": ingredient_ids["mixed_salad"],
+        "quantity_added": 500,
+        "date": "2025-09-14T08:10:00Z",
+        "items_left": 420,
+        "expiry_date": "2025-09-19T00:00:00Z",
+        "clear": True
+    }
+]
+
+restork_coll.insert_many(restocks)
 
 client.close()

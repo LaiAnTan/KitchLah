@@ -155,8 +155,8 @@ def convert_to_timestamps(task_schedule, current_time, time_unit_minutes=1):
 item_ids = {
 	"burger_and_fries": ObjectId("68cf78946e7d2e5ba075d171"),
 	"fish_and_chips": ObjectId("68cf78946e7d2e5ba075d172"),
-	"spaghetti_bolognese": ObjectId("68cf78946e7d2e5ba075d173"),
-	"chicken_chop": ObjectId("68cf78946e7d2e5ba075d174")
+	"Spaghetti Bolognese_bolognese": ObjectId("68cf78946e7d2e5ba075d173"),
+	"Chicken Chop with Black Pepper Sauce": ObjectId("68cf78946e7d2e5ba075d174")
 }
 
 def lambda_handler(event, context):

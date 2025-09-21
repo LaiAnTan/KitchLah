@@ -79,9 +79,8 @@ def get_expirty_alert():
 
             if not isinstance(daily_consumption, list) or len(daily_consumption) != 7:
                 continue
-            
+
             # Calculate expiry waste for this ingredient
-            print(ingredient['active_restocks'])
             expiry_analysis = _calculate_expiry_waste(
                 ingredient['active_restocks'],
                 daily_consumption
