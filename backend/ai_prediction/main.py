@@ -111,16 +111,15 @@ def run():
 
     df_ingredients = pd.DataFrame(ingredient_daily).set_index("day").fillna(0)
 
-    print("\nDaily Ingredient Requirement (kg/count):")
-    cols = ["chicken_patty_count", "fries", "bun_count", "lettuce",
-        "fish_count", "batter", "pasta", "sauce", "cheese", "chicken_count"]
+    print("something something", df_ingredients)
 
-    print(df_ingredients.reindex(columns=cols, fill_value=0))
+    print("\nDaily Ingredient Requirement (kg/count):")
 
     # -------------------- 5) Surge detection --------------------
 
     # 1. Compute baseline (historical hourly averages)
     baseline_df = daily_sorted.groupby('hour')[MENU].mean().reset_index()
+    print(baseline_df)
     # print("Baseline data preview:")
     # print(baseline_df.head())
 

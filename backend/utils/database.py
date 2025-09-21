@@ -30,8 +30,20 @@ class Database:
         return self._db.schedules
 
     @property
+    def stations(self):
+        return self._db.stations
+
+    @property
+    def items(self):
+        return self._db.items
+
+    @property
     def restocks(self):
         return self._db.restocks
+
+    @property
+    def orders(self):
+        return self._db.orders
 
     def close(self):
         if self._client:

@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
-import { stations, orders, aiSuggestions } from '../data/mockData';
+import React, { useEffect, useState } from 'react';
+import { stations, aiSuggestions, Order } from '../data/mockData';
+import { list } from 'postcss';
+
 
 const AIDecisionMaking: React.FC = () => {
   const [activeStation, setActiveStation] = useState<string>('all');
   const [simulationInput, setSimulationInput] = useState<string>('');
+
+  const [orders, setOrders] = useState<Array<Order>>([]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/api/schedule").then(
+      (res) => res.json() 
+    ).then((res) => setOrders(res))
+  }, [])
+
+  console.log(orders)
 
   const stationTabs = [
     { id: 'all', name: 'All Stations', icon: '🏭' },

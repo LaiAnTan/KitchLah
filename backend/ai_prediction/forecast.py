@@ -11,7 +11,7 @@ def forecast(model, daily_sorted, scaler_X, scaler_y, horizon="day"):
     history = daily_sorted.copy()
 
     # Steps
-    steps = 12 if horizon == "day" else 12*7
+    steps = 16 if horizon == "day" else 16*7
 
     for step in range(steps):
         # Use last row of history as features
@@ -96,14 +96,14 @@ def forecast(model, daily_sorted, scaler_X, scaler_y, horizon="day"):
         # Advance hour/day
         new_hour = (last_row["hour"].values[0] + 1)
         new_day_of_week = last_row["day_of_week"].values[0]
-        if new_hour > 20:
-            new_hour = 9
+        if new_hour > 22:
+            new_hour = 6
             new_day_of_week = (new_day_of_week + 1) % 7
         new_row["hour"] = new_hour
         new_row["day_of_week"] = new_day_of_week
 
         # Advance date if needed (optional, for completeness)
-        if new_hour == 9 and step > 0:  # New day started
+        if new_hour == 6 and step > 0:  # New day started
             current_date = pd.to_datetime(last_row["date"].values[0])
             new_date = current_date + pd.Timedelta(days=1)
             new_row["date"] = new_date
