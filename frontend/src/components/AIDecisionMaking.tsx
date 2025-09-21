@@ -144,7 +144,7 @@ const AIDecisionMaking: React.FC = () => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700">Avg Processing Time</span>
-                <span className="text-sm text-gray-900">{currentStation.avgProcessingTime} min</span>
+                <span className="text-sm text-gray-900">{Math.round(filteredOrders.reduce((sum, x) => sum + x.estimatedTime, 0) / filteredOrders.length * 100) / 100} min</span>
               </div>
             </div>
           )}
