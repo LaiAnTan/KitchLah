@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { stockItems, stockHistory, aiSuggestions } from '../data/mockData';
+import { stockItems, stockHistory, aiSuggestions, branchStocks, stockTransferRecommendations } from '../data/mockData';
 
 const WasteMinimization: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'inventory' | 'history'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'history' | 'transfer'>('inventory');
   const [generatedRecipes, setGeneratedRecipes] = useState<string[]>([]);
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
 
@@ -86,6 +86,45 @@ const WasteMinimization: React.FC = () => {
     return Math.round((item.quantity / baseQuantity) * 100);
   };
 
+  const getStockStatusColor = (status: string) => {
+    switch (status) {
+      case 'high':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStockStatusIcon = (status: string) => {
+    switch (status) {
+      case 'high':
+        return '🟢';
+      case 'medium':
+        return '🟡';
+      case 'low':
+        return '🔴';
+      default:
+        return '⚪';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -124,6 +163,16 @@ const WasteMinimization: React.FC = () => {
                   }`}
                 >
                   📊 Stock History
+                </button>
+                <button
+                  onClick={() => setActiveTab('transfer')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'transfer'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  🚚 Stock Transfer
                 </button>
               </nav>
             </div>
@@ -192,7 +241,7 @@ const WasteMinimization: React.FC = () => {
                     </table>
                   </div>
                 </div>
-              ) : (
+              ) : activeTab === 'history' ? (
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock History</h3>
                   <div className="overflow-x-auto">
@@ -243,7 +292,68 @@ const WasteMinimization: React.FC = () => {
                     </table>
                   </div>
                 </div>
-              )}
+              ) : activeTab === 'transfer' ? (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Multi-Branch Stock Levels</h3>
+                  
+                  {/* Branch Stock Boxes */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {branchStocks.map((branch) => (
+                      <div key={branch.branchId} className="border border-gray-200 rounded-lg p-4">
+                        <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
+                          <span className="mr-2">🏪</span>
+                          {branch.branchName}
+                        </h4>
+                        <div className="space-y-2">
+                          {branch.stock.map((item) => (
+                            <div key={item.itemId} className="flex justify-between items-center text-sm">
+                              <span className="text-gray-700">{item.itemName}</span>
+                              <div className="flex items-center space-x-2">
+                                <span className="text-gray-900">{item.quantity} {item.unit}</span>
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStockStatusColor(item.status)}`}>
+                                  <span className="mr-1">{getStockStatusIcon(item.status)}</span>
+                                  {item.status}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* AI Transfer Recommendations */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 className="text-md font-semibold text-gray-900 mb-3 flex items-center">
+                      <span className="mr-2">🤖</span>
+                      AI Stock Transfer Recommendations
+                    </h4>
+                    <div className="space-y-3">
+                      {stockTransferRecommendations.map((recommendation) => (
+                        <div key={recommendation.id} className="bg-white p-3 rounded border">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                Transfer {recommendation.quantity} {recommendation.unit} of {recommendation.item}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                From {recommendation.fromBranch} to {recommendation.toBranch}
+                              </p>
+                            </div>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(recommendation.priority)}`}>
+                              {recommendation.priority} priority
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-xs text-gray-500">
+                            <span>⏰ {recommendation.timeFrame}</span>
+                            <span>💡 {recommendation.reason}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
