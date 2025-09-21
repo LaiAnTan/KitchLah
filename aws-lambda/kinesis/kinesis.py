@@ -1,5 +1,6 @@
 import boto3, json, base64
 from datetime import datetime
+from bson import ObjectId
 
 kinesis = boto3.client("kinesis", region_name="ap-southeast-1")
 stream_name = "kitchlah-orders-stream"
@@ -9,12 +10,12 @@ order = {
 	"datetime": str(datetime.now()),
 	"items": [
 		{
-			"itemID": "68cfbac49cd6acf342686777",
+			"item_id": "68cfbac49cd6acf342686777",
 			"quantity": 1,
 			"remarks": "More Spaghetti"
 		},
 		{
-			"itemID": "68cfbac49cd6acf342686778",
+			"item_id": "68cfbac49cd6acf342686778",
 			"quantity": 4,
 			"remarks": "More Chicken Chop"
 		}
