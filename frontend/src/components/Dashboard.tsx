@@ -1,27 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { orderPredictions, alerts, menuPredictions } from '../data/mockData';
+import { orderPredictions, alerts, menuPredictions, MenuPrediction } from '../data/mockData';
 
 const Dashboard: React.FC = () => {
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
   const [loadingBreakdown, setLoadingBreakdown] = useState<string | null>(null);
+  const [totalPredictedOrders, setTotalPredictOrders] = useState<number>(0)
+  const [menuPredictions, setMenuPrediction] = useState<Array<MenuPrediction>>([])
+  const now = new Date();
+  const [currentTime, setCurrentTime] = useState<string>(now.toLocaleTimeString('en-US', { 
+                                                                        hour: '2-digit', 
+                                                                        minute: '2-digit',
+                                                                        second: '2-digit'
+                                                                      }))
+
+  useEffect(() => {
+    const timeout = setInterval(() => {
+      const now = new Date()
+      setCurrentTime(now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      }))
+    }, 1000)
+
+    fetch("http://127.0.0.1:5000/forecast").then
+    ((data) => data.json()).then
+    ((data) => {
+      console.log(data)
+      setMenuPrediction(data)
+    })
+
+    return () => clearInterval(timeout)
+  }, [])
+
+  useEffect(() => {
+    setTotalPredictOrders(menuPredictions.reduce((sum, prediction) => sum + prediction.quantity, 0))
+  }, [menuPredictions])
 
   // Calculate total predicted orders for the day
-  const totalPredictedOrders = menuPredictions.reduce((sum, prediction) => sum + prediction.quantity, 0);
+  // const totalPredictedOrders = menuPredictions.reduce((sum, prediction) => sum + prediction.quantity, 0);
 
   // Get current date and time
-  const now = new Date();
   const currentDate = now.toLocaleDateString('en-US', { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
   });
-  const currentTime = now.toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    second: '2-digit'
-  });
+  // const currentTime = now.toLocaleTimeString('en-US', { 
+  //   hour: '2-digit', 
+  //   minute: '2-digit',
+  //   second: '2-digit'
+  // });
 
   // Get current time slot
   const currentHour = new Date().getHours();
