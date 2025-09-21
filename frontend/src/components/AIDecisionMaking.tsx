@@ -168,7 +168,7 @@ const AIDecisionMaking: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-sm text-gray-600 mb-2">
-                    Items: {order.items.join(', ')}
+                    Current Task: {order.items.join(', ')}
                   </div>
                   <div className="flex justify-between items-center text-xs text-gray-500">
                     <span>Station: {order.station}</span>

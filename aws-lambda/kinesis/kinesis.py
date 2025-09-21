@@ -9,14 +9,14 @@ order = {
 	"datetime": str(datetime.now()),
 	"items": [
 		{
-			"itemID": 1,
+			"itemID": "68cfbac49cd6acf342686777",
 			"quantity": 1,
-			"remarks": 1
+			"remarks": "More Spaghetti"
 		},
 		{
-			"itemID": 5,
+			"itemID": "68cfbac49cd6acf342686778",
 			"quantity": 4,
-			"remarks": 1
+			"remarks": "More Chicken Chop"
 		}
 	]
 }

@@ -40,10 +40,10 @@ def get_current_schedule():
         data["estimatedTime"] = data["end_time"] - data["start_time"]
         data["customerName"] = name
         orderItems = orderData["items"]
-        items = []
-        for item in orderItems:
-            itemData = itemdb.find_one({'_id': item['item_id']})
-            items.append(itemData["proper_name"])
-        data["items"] = items
+        # items = []
+        # for item in orderItems:
+        #     itemData = itemdb.find_one({'_id': item['item_id']})
+        #     items.append(itemData["proper_name"])
+        data["items"] = [data["task_name"]]# show task name instead
         data["id"] = data["_id"]
     return json.dumps(datas, default=str)
