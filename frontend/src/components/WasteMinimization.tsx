@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StockItem, stockHistory, aiSuggestions, branchStocks, stockTransferRecommendations } from '../data/mockData';
+import { StockItem, stockHistory, aiSuggestions, branchStocks, stockTransferRecommendations, Recipe } from '../data/mockData';
 
 const WasteMinimization: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'history' | 'transfer'>('inventory');
   const [generatedRecipes, setGeneratedRecipes] = useState<string[]>([]);
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
   const [stockItems, setStockItem] = useState<Array<StockItem>>([])
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/stock")
