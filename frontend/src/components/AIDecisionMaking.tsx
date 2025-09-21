@@ -174,7 +174,7 @@ const AIDecisionMaking: React.FC = () => {
         </div>
 
         {/* Right Panel - Insights & Actions */}
-        <div className="space-y-6">
+        <div className="space-y-6 overflow-y-auto">
           {/* Station Overload Box */}
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">🚨 Station Overload Status</h3>
