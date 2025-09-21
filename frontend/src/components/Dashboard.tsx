@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { orderPredictions, alerts, menuPredictions, MenuPrediction } from '../data/mockData';
+import { OrderPrediction, alerts, menuPredictions, MenuPrediction } from '../data/mockData';
+import Clock from './Clock';
 
 const Dashboard: React.FC = () => {
   const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
@@ -11,30 +12,46 @@ const Dashboard: React.FC = () => {
   const [totalPredictedOrders, setTotalPredictOrders] = useState<number>(0)
   const [menuPredictions, setMenuPrediction] = useState<Array<MenuPrediction>>([])
   const now = new Date();
-  const [currentTime, setCurrentTime] = useState<string>(now.toLocaleTimeString('en-US', { 
-                                                                        hour: '2-digit', 
-                                                                        minute: '2-digit',
-                                                                        second: '2-digit'
-                                                                      }))
+  const [orderPredictions, setOrderPrediction] = useState<Array<OrderPrediction>>([])                                                                      
 
   useEffect(() => {
-    const timeout = setInterval(() => {
-      const now = new Date()
-      setCurrentTime(now.toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        second: '2-digit'
-      }))
-    }, 1000)
-
     fetch("http://127.0.0.1:5000/forecast").then
     ((data) => data.json()).then
     ((data) => {
       console.log(data)
+      const prediction = [
+        { timeSlot: '6:00 AM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '7:00 AM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '8:00 AM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '9:00 AM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '10:00 AM', predictedOrders: 0, confidence: 0 },
+        { timeSlot: '11:00 AM', predictedOrders: 0, confidence: 0 },
+        { timeSlot: '12:00 PM', predictedOrders: 0, confidence: 0 },
+        { timeSlot: '1:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '2:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '3:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '4:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '5:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '6:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '7:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '8:00 PM', predictedOrders:  0, confidence: 0 },
+        { timeSlot: '9:00 PM', predictedOrders:  0, confidence: 0 },
+      ]
+      for (const d of data) {
+        const { hourlyBreakdown } = d
+        for ( const hBreak of hourlyBreakdown ) {
+          const { hour, quantity } = hBreak
+          for ( const predict of prediction ) {
+            const { timeSlot } = predict
+            if (timeSlot == hour) {
+              predict.predictedOrders += quantity
+            }
+          }
+        }
+      }
+      setOrderPrediction(prediction)
       setMenuPrediction(data)
     })
-
-    return () => clearInterval(timeout)
   }, [])
 
   useEffect(() => {
@@ -121,7 +138,7 @@ const Dashboard: React.FC = () => {
           </p>
           <div className="text-right mt-2 sm:mt-0">
             <p className="text-sm text-gray-600">{currentDate}</p>
-            <p className="text-lg font-semibold text-primary">{currentTime}</p>
+            <Clock />
           </div>
         </div>
         {currentTimeSlot && (
