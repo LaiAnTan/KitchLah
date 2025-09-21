@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { stockItems, stockHistory, aiSuggestions } from '../data/mockData';
+import React, { useEffect, useState } from 'react';
+import { stockItems, stockHistory, aiSuggestions, Recipe } from '../data/mockData';
 
 const WasteMinimization: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'history'>('inventory');
-  const [generatedRecipes, setGeneratedRecipes] = useState<string[]>([]);
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -63,22 +63,30 @@ const WasteMinimization: React.FC = () => {
     .filter(entry => entry.action === 'wasted')
     .reduce((sum, entry) => sum + entry.cost, 0);
 
-  const generateRecipes = async () => {
-    setIsGeneratingRecipes(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      const mockRecipes = [
-        "🍲 Chicken & Tomato Soup - Use expiring chicken breast and tomatoes",
-        "🥗 Fresh Garden Salad - Combine lettuce with fresh vegetables",
-        "🍝 Pasta Primavera - Create a vegetable pasta with near-expiry items",
-        "🥘 One-Pot Chicken Rice - Utilize chicken breast and vegetables",
-        "🥪 Club Sandwich - Use chicken breast, lettuce, and tomatoes"
-      ];
-      setGeneratedRecipes(mockRecipes);
+  useEffect(() => {
+
+    console.log("HELLOL THEEJKWLA")
+
+    if (isGeneratingRecipes === false) {
+      return
+    }
+
+    fetch("http://127.0.0.1:5000/api/bedrock/generate-recipes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ingredient_id: "68cfbac39cd6acf34268676a"
+      })
+    }).then(
+      (res) => res.json() 
+    ).then((res) => {
+      setRecipes(res.recipes)
       setIsGeneratingRecipes(false);
-    }, 2000);
-  };
+    }
+    )
+  }, [isGeneratingRecipes])
 
   const calculateStockPercentage = (item: any) => {
     // Mock calculation - in real app, this would be based on actual stock levels
@@ -294,7 +302,7 @@ const WasteMinimization: React.FC = () => {
             {/* Recipe Generation Button */}
             <div className="mb-4">
               <button
-                onClick={generateRecipes}
+                onClick={() => setIsGeneratingRecipes(true)}
                 disabled={isGeneratingRecipes}
                 className="w-full bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
@@ -310,20 +318,65 @@ const WasteMinimization: React.FC = () => {
             </div>
 
             {/* Generated Recipes */}
-            {generatedRecipes.length > 0 && (
+            {recipes.length > 0 && (
               <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <h4 className="text-sm font-medium text-gray-900 mb-2">🍳 Generated Recipe Ideas</h4>
-                <div className="space-y-2">
-                  {generatedRecipes.map((recipe, index) => (
-                    <div key={index} className="text-xs text-gray-700 bg-white p-2 rounded border">
-                      {recipe}
+                <div className="space-y-4">
+                  {recipes.map((recipe, index) => (
+                    <div key={index} className="bg-white p-4 rounded-lg border shadow-sm">
+                      <div className="flex justify-between items-start mb-3">
+                        <h5 className="text-sm font-semibold text-gray-900">{recipe.name}</h5>
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                          {recipe.cuisine_type}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-gray-600">
+                        <div>⏱️ {recipe.cook_time_minutes} mins</div>
+                        <div>👥 {recipe.servings} servings</div>
+                        <div>💰 Cost: RM{recipe.estimated_cost.toFixed(2)}</div>
+                        <div>🏷️ Sell: RM{recipe.suggested_selling_price.toFixed(2)}</div>
+                      </div>
+
+                      <div className="mb-3">
+                        <h6 className="text-xs font-medium text-gray-700 mb-1">Ingredients:</h6>
+                        <div className="text-xs text-gray-600 max-h-20 overflow-y-auto">
+                          {recipe.ingredients.map((ingredient, idx) => (
+                            <div key={idx}>
+                              • {ingredient.quantity} {ingredient.unit} {ingredient.name}
+                              {ingredient.notes && ` (${ingredient.notes})`}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mb-3">
+                        <h6 className="text-xs font-medium text-gray-700 mb-1">Instructions:</h6>
+                        <div className="text-xs text-gray-600 max-h-16 overflow-y-auto">
+                          {recipe.instructions.map((instruction, idx) => (
+                            <div key={idx} className="mb-1">
+                              {instruction}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center text-xs">
+                        <span className={`px-2 py-1 rounded-full ${
+                          recipe.difficulty === 'Easy' ? 'bg-green-100 text-green-800' :
+                          recipe.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {recipe.difficulty}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               {aiSuggestions.filter(suggestion => suggestion.type === 'waste' || suggestion.type === 'inventory').map((suggestion) => (
                 <div
                   key={suggestion.id}
@@ -359,7 +412,7 @@ const WasteMinimization: React.FC = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
