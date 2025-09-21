@@ -9,8 +9,8 @@ from flask_cors import CORS
 from utils.database import db
 from datetime import datetime, timedelta
 
-app = Flask(__name__)
-CORS(app)
+application = Flask(__name__)
+CORS(application)
 
 def quantities_to_schedule(quantities, start_hour=6):
     schedule = []
@@ -21,7 +21,7 @@ def quantities_to_schedule(quantities, start_hour=6):
         schedule.append({"hour": label, "quantity": qty})
     return schedule
 
-@app.route("/forecast", methods=["GET"])
+@application.route("/forecast", methods=["GET"])
 def forecast_endpoint():
     try:
         pred_day, _, _, llm_prompt, ai_response = run()
@@ -52,7 +52,7 @@ def forecast_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/ingredients", methods=["GET"])
+@application.route("/ingredients", methods=["GET"])
 def ingredients_endpoint():
     try:
         _, _, df_ingredients, _, _ = run()
@@ -70,12 +70,11 @@ def ingredients_endpoint():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-app.register_blueprint(alert_bp)
-app.register_blueprint(ingredients_bp)
-app.register_blueprint(bedrock_bp)
-app.register_blueprint(restocks_bp)
-app.register_blueprint(crud_bp)
+application.register_blueprint(alert_bp)
+application.register_blueprint(ingredients_bp)
+application.register_blueprint(bedrock_bp)
+application.register_blueprint(restocks_bp)
+application.register_blueprint(crud_bp)
 
 if __name__ == "__main__":
-    # Flask’s dev server
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    application.run(debug=True, host="0.0.0.0", port=5000)
