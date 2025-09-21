@@ -2,10 +2,10 @@
 
 # -------------------- Recipe definitions --------------------
 RECIPE = {
-    "burger_fries": {"beef_patty":150, "fries":200, "bun_count":1, "lettuce":20},
-    "fish_n_chip": {"fish":250, "fries":200, "batter":80},
+    "burger_fries": {"chicken_patty_count":1, "fries":200, "bun_count":1, "lettuce":20},
+    "fish_n_chip": {"fish_count":2, "fries":200, "batter":80},
     "spaghetti": {"pasta":120, "sauce":90, "cheese":10},
-    "chicken_chop": {"chicken":250, "sauce":60, "fries":150}
+    "chicken_chop": {"chicken_count":1, "sauce":60, "fries":150}
 }
 
 # key = name of menu item, value = dict of ingredients and per-unit quantities
