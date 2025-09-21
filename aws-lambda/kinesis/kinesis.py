@@ -1,7 +1,7 @@
 import boto3, json, base64
 from datetime import datetime
 
-kinesis = boto3.client("kinesis", region_name="ap-southeast-5")
+kinesis = boto3.client("kinesis", region_name="ap-southeast-1")
 stream_name = "kitchlah-orders-stream"
 
 order = {
@@ -24,7 +24,7 @@ order = {
 def kinesis_put(client, order):
 
 	response = kinesis.put_record(
-		StreamName="kitchlah-orders-stream",
+		StreamName=stream_name,
 		Data=json.dumps(order),
 		PartitionKey="retaurant1"
 	)
@@ -34,21 +34,21 @@ def kinesis_put(client, order):
 def kinesis_view(client):
 
 	shards = client.describe_stream(StreamName=stream_name)["StreamDescription"]["Shards"]
-	shardId = shards[0]["ShardId"]
+	for shard in shards: # theres more than one shard ya fuck
+		shardId = shard["ShardId"]
+		print(shardId)
 
-	iterator = client.get_shard_iterator(
-		StreamName=stream_name,
-		ShardId=shardId,
-		ShardIteratorType="TRIM_HORIZON",
-	)["ShardIterator"]
+		iterator = client.get_shard_iterator(
+			StreamName=stream_name,
+			ShardId=shardId,
+			ShardIteratorType="TRIM_HORIZON",
+		)["ShardIterator"]
 
-	
-
-	records = client.get_records(ShardIterator=iterator, Limit=5)
-	for r in records["Records"]:
-		data = json.loads(base64.b64decode(r["Data"]))
-		print(data)
+		records = client.get_records(ShardIterator=iterator, Limit=5)
+		for r in records["Records"]:
+			data = json.loads(r["Data"].decode("utf-8"))
+			print(data)
 
 if __name__ == "__main__":
 	kinesis_put(kinesis, order)
-	kinesis_view(kinesis)
+	# kinesis_view(kinesis)

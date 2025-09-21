@@ -7,7 +7,7 @@ load_dotenv()
 uri = os.getenv('MONGO_URI')
 
 client = MongoClient(uri)
-db = client.Kitchlah_db
+db = client.kitchlah_db
 stations_coll = db.stations
 ingredients_coll = db.ingredients
 items_coll = db.items
