@@ -140,7 +140,7 @@ const AIDecisionMaking: React.FC = () => {
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">Orders in Queue</span>
-                <span className="text-sm text-gray-900">{currentStation.ordersInQueue}</span>
+                <span className="text-sm text-gray-900">{filteredOrders.length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700">Avg Processing Time</span>
