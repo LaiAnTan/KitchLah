@@ -171,3 +171,15 @@ At 2 PM, we expect a lot more orders for fish 'n' chips. To get ready:
 
 Thanks for your help!
 
+[2025-09-21 14:20:42.942214]
+**Attention Kitchen Staff!**
+
+We're expecting a big increase in orders at 3 PM. Here's what you need to do:
+
+- **Burger and Fries:** Get ready for a lot more orders. Make extra now.
+- **Fish and Chips:** Expect many more orders. Prepare extra portions.
+- **Spaghetti:** We'll need a lot more. Start making extra now.
+- **Chicken Chop:** Get ready for a surge in orders. Make extra in advance.
+
+Let's work together to keep up with the demand!
+
