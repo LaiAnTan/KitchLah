@@ -5,7 +5,7 @@ FROM public.ecr.aws/lambda/python:3.12
 COPY requirements.txt ./
 
 # Install dependencies
-RUN pip install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
+RUN pip install --no-cache-dir -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
 # Copy cert into the image (inside Lambda task root)
 COPY cert/aws.pem ${LAMBDA_TASK_ROOT}/cert/aws.pem
