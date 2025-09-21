@@ -1,71 +1,52 @@
-from flask import Flask, Response, request
-from pymongo import MongoClient
-from pymongo.collection import Collection
-from dotenv import load_dotenv
-import random
-import json
-import os 
-
-load_dotenv()
+from flask import Flask, jsonify
+from ai_prediction.main import run  # make sure run() is defined in main.py
+from routes.alert import alert_bp
+from routes.ingredients import ingredients_bp
+from routes.restocks import restocks_bp
+from routes.bedrock_api import bedrock_bp
+from routes.crud import crud_bp
 
 app = Flask(__name__)
-mongo_uri = os.getenv("MONGO_URI")
 
-class MongoDB:
-   _instance = None
-   db = None
+@app.route("/forecast", methods=["GET"])
+def forecast_endpoint():
+    try:
+        pred_day, _, _, llm_prompt, ai_response = run()
 
-   def __new__(cls, *args, **kwargs):
-      if not cls._instance:
-         cls._instance = super(MongoDB, cls).__new__(cls, *args, **kwargs)
-         cls.db = MongoClient(mongo_uri)[os.getenv("MONGO_DB")]
-      return cls._instance
+        # Convert hourly forecast (DataFrame) to dict-of-lists
+        hourly_forecast = {col: pred_day[col].tolist() for col in pred_day.columns}
 
-class MongoCollection:
-    collection: Collection = None
+        # Define dict in the order you want
+        result = {
+            "hourly_forecast": hourly_forecast,
+            "llm_prompt": llm_prompt,
+            "ai_response": ai_response,
+        }
 
-    def __init_subclass__(cls, collection_name, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls.collection = MongoDB().db[collection_name]
+        return jsonify(result)
 
-    @classmethod
-    def patch(cls, id, data):
-        update_operations = {"$set": data}
-        return cls.collection.update_one({"_id": id}, update_operations)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    @classmethod
-    def post(cls, data):
-        return cls.collection.insert_one(data)
+@app.route("/ingredients", methods=["GET"])
+def ingredients_endpoint():
+    try:
+        _, _, df_ingredients, _, _ = run()
 
-    @classmethod
-    def get_all(cls):
-        return list(cls.collection.find({}))
+        result = {col: df_ingredients[col].tolist() for col in df_ingredients.columns}
 
-    @classmethod
-    def get(cls, id):
-        return cls.collection.find_one({"_id": id})
+        # reset_index() so "day" shows up in JSON
+        return jsonify(result)
 
-    @classmethod
-    def delete(cls, id):
-        return cls.collection.delete_one({"_id": id})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-class TestOne(MongoCollection, collection_name="testone"):
-   pass
+app.register_blueprint(alert_bp)
+app.register_blueprint(ingredients_bp)
+app.register_blueprint(bedrock_bp)
+app.register_blueprint(restocks_bp)
+app.register_blueprint(crud_bp)
 
-class TestTwo(MongoCollection, collection_name="testtwo"):
-    pass
-
-@app.route('/post', methods=["GET"])
-def post():
-   TestOne.post({
-      'number': random.randint(1, 10**9)
-   })
-   return 'Post Done :D'
-
-@app.route('/get', methods=["GET"])
-def get():
-   data = TestOne.get_all()
-   return json.dumps(data, default=str)
-
-if __name__ == '__main__':
-   app.run()
+if __name__ == "__main__":
+    # Flask’s dev server
+    app.run(debug=True, host="0.0.0.0", port=5000)
