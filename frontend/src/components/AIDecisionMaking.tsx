@@ -6,13 +6,16 @@ import { list } from 'postcss';
 const AIDecisionMaking: React.FC = () => {
   const [activeStation, setActiveStation] = useState<string>('all');
   const [simulationInput, setSimulationInput] = useState<string>('');
-
+  const [loading, setLoading] = useState<Boolean>(true)
   const [orders, setOrders] = useState<Array<Order>>([]);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/schedule").then(
       (res) => res.json() 
-    ).then((res) => setOrders(res))
+    ).then((res) => {
+      setOrders(res)
+      setLoading(false)
+    })
   }, [])
 
   console.log(orders)
@@ -150,7 +153,12 @@ const AIDecisionMaking: React.FC = () => {
           )}
 
           <div className="space-y-3">
-            {filteredOrders.length > 0 ? (
+            {loading === true ?  
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mr-3"></div>
+                <span className="text-sm text-gray-600">Crunching Data...</span>
+              </div>
+            : filteredOrders.length > 0 ? (
               filteredOrders.map((order) => (
                 <div key={order.id} className="p-4 border border-gray-200 rounded-lg">
                   <div className="flex justify-between items-start mb-2">
